@@ -6,47 +6,53 @@ from django.contrib.auth.decorators import user_passes_test
 from .models import Book, Library, UserProfile
 
 
-# Role check helper
-def check_role(role):
-    def test(user):
-        return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == role
-    return user_passes_test(test)
+# Role-check functions (needed to use user_passes_test directly)
+def is_admin(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
 
-# Role-based views
-@check_role('Admin')
+# Admin view
+@user_passes_test(is_admin)
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html')
 
-@check_role('Librarian')
+# Librarian view
+@user_passes_test(is_librarian)
 def librarian_view(request):
     return render(request, 'relationship_app/librarian_view.html')
 
-@check_role('Member')
+# Member view
+@user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
 
 
-# User Registration View
+# Register view
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('login')  # Redirect after successful registration
+            return redirect('login')
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
 
 
-# Function-based view: List all books and authors
+# Function-based view: List all books
 def list_books(request):
-    books = Book.objects.all()  # Required for autograder check
+    books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
-# Class-based view: Detail of a specific library
+# Class-based view: Library detail
 class LibraryDetailView(DetailView):
     model = Library
     template_name = 'relationship_app/library_detail.html'
