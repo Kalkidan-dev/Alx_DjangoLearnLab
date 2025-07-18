@@ -4,7 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import user_passes_test
 from .models import Book, Library, UserProfile
-from .forms import BookForm  # you’ll need to create this form
+from .forms import BookForm  
+from django.contrib.auth.decorators import permission_required
 
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
