@@ -4,6 +4,26 @@ from .models import Book
 from .models import Library
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import user_passes_test
+from .models import UserProfile
+
+def check_role(role):
+    def test(user):
+        return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == role
+    return user_passes_test(test)
+
+@check_role('Admin')
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+@check_role('Librarian')
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+@check_role('Member')
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
+
 
 def register(request):
     if request.method == 'POST':
