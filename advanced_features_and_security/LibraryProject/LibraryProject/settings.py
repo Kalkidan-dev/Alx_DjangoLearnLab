@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0r5183&n9*vrdxre=8v#%xg0l&t_#)#g7^*&e+fhzuh_)1-v(q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookshelf',
     'relationship_app',
-    
+   
 ]
 
 MIDDLEWARE = [
@@ -115,6 +115,37 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+
+# SECURITY ENHANCEMENTS
+
+# Turn off debug in production - DEBUG should always be False in production environment
+DEBUG = False  # Remember to override this to True only in local/dev settings
+
+# Enable browser's XSS filtering and prevent it from rendering pages if XSS attack is detected
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevent the browser from MIME-sniffing a response away from the declared content-type
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Prevent your site from being framed (clickjacking protection)
+X_FRAME_OPTIONS = 'DENY'
+
+# Ensure cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Optional: Set HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Optional: Force HTTPS redirect
+SECURE_SSL_REDIRECT = True
+
+
+
+
 
 
 # Static files (CSS, JavaScript, Images)
