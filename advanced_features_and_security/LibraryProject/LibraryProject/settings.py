@@ -16,18 +16,16 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-0r5183&n9*vrdxre=8v#%xg0l&t_#)#g7^*&e+fhzuh_)1-v(q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
+# Always set DEBUG = False in production environments.
+DEBUG = False  # Override in development/local settings if needed
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']  # Add your domain names here
 
-
+ALLOWED_HOSTS = ['']
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,17 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookshelf',
     'relationship_app',
-   
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',  # Enables several security features
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # CSRF protection middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -57,12 +54,12 @@ ROOT_URLCONF = 'LibraryProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # Add your template directories here if any
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # required by admin
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -75,89 +72,61 @@ WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',  # Use PostgreSQL or other DB in production
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# SECURITY ENHANCEMENTS
+# Static files
+STATIC_URL = 'static/'
 
-# Turn off debug in production - DEBUG should always be False in production environment
-DEBUG = False  # Remember to override this to True only in local/dev settings
 
-# Enable browser's XSS filtering and prevent it from rendering pages if XSS attack is detected
-SECURE_BROWSER_XSS_FILTER = True
+# Custom User Model
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
-# Prevent the browser from MIME-sniffing a response away from the declared content-type
-SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# Prevent your site from being framed (clickjacking protection)
-X_FRAME_OPTIONS = 'DENY'
+# Default auto field for models
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Ensure cookies are only sent over HTTPS
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
 
-# Optional: Set HTTP Strict Transport Security (HSTS)
+# --- SECURITY ENHANCEMENTS ---
+
+# Enforce HTTPS redirects
+SECURE_SSL_REDIRECT = True  # Redirect HTTP -> HTTPS
+
+# HTTP Strict Transport Security (HSTS)
 SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Optional: Force HTTPS redirect
-SECURE_SSL_REDIRECT = True
+# Secure cookies - only sent over HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
+# Browser security protections
+SECURE_BROWSER_XSS_FILTER = True  # Enable browser XSS filtering
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
 
-
-
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-AUTH_USER_MODEL = 'bookshelf.CustomUser'
-
-
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Clickjacking protection
+X_FRAME_OPTIONS = 'DENY'  # Deny framing of your site for clickjacking protection
