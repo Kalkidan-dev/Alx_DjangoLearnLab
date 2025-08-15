@@ -1,19 +1,21 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My Blog{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav>
+    <nav class="navbar">
         <ul>
             <li><a href="{% url 'post_list' %}">All Posts</a></li>
             <li><a href="{% url 'post_new' %}">New Post</a></li>
             
             {% if user.is_authenticated %}
-                <li><a href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="{% url 'logout' %}">Logout ({{ user.username }})</a></li>
             {% else %}
                 <li><a href="{% url 'login' %}">Login</a></li>
             {% endif %}
@@ -21,9 +23,9 @@
     </nav>
 
     <!-- Page Content -->
-    <div>
+    <main class="container">
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
 </body>
 </html>
