@@ -7,11 +7,28 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .forms import PostForm
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import CommentForm
+from django.db.models import Q
+
+def posts_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = tag.posts.all()
+    return render(request, 'blog/post_list.html', {'posts': posts, 'tag': tag})
+
+def search_posts(request):
+    query = request.GET.get('q', '')
+    posts = Post.objects.all()
+    if query:
+        posts = posts.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    return render(request, 'blog/search_results.html', {'posts': posts, 'query': query})
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
