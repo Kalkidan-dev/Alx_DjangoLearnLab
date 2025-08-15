@@ -3,28 +3,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import Post, Comment
+from taggit.forms import TagWidget  
 
 class PostForm(forms.ModelForm):
-    tags = forms.CharField(
-        required=False,
-        help_text="Comma-separated tags"
-    )
-
     class Meta:
         model = Post
         fields = ['title', 'content', 'tags']
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if commit:
-            instance.save()
-            # Clear existing tags
-            instance.tags.clear()
-            # Add new tags using django-taggit
-            tag_names = [t.strip() for t in self.cleaned_data['tags'].split(',') if t.strip()]
-            for name in tag_names:
-                instance.tags.add(name)  # Add tags directly as strings
-        return instance
+        widgets = {
+            'tags': TagWidget(),  # <-- use TagWidget here
+        }
 
 
 class CommentForm(forms.ModelForm):
