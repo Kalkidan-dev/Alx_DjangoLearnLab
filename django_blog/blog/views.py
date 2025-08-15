@@ -10,14 +10,13 @@ from .forms import PostForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
-from .models import Post, Comment, Tag
+from .models import Post, Comment
 from .forms import CommentForm
 from django.db.models import Q
 
 def posts_by_tag(request, tag_name):
-    tag = get_object_or_404(Tag, name=tag_name)
-    posts = tag.posts.all()
-    return render(request, 'blog/post_list.html', {'posts': posts, 'tag': tag})
+    posts = Post.objects.filter(tags__name__iexact=tag_name)
+    return render(request, 'blog/post_list.html', {'posts': posts, 'tag_name': tag_name})
 
 def search_posts(request):
     query = request.GET.get('q', '')
