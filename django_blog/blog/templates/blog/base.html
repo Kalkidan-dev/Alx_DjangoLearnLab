@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+    <form action="{% url 'search_posts' %}" method="get" style="display:inline;">
+    <input type="text" name="q" placeholder="Search...">
+    <button type="submit">Go</button>
+</form>
+ 
     <!-- Navigation Bar -->
     <nav class="navbar">
         <ul>
