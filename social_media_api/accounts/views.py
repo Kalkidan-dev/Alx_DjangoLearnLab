@@ -1,7 +1,6 @@
-from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework import permissions
+from rest_framework import generics, status, permissions
 
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
@@ -10,6 +9,37 @@ from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 # Alias to satisfy checker
 CustomUser = get_user_model()
 
+
+class LikePostView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        like, created = Like.objects.get_or_create(post=post, user=request.user)
+        if not created:
+            return Response({"detail": "You already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
+        # Create notification
+        if post.author != request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb="liked your post",
+                target=post
+            )
+        return Response({"detail": "Post liked."}, status=status.HTTP_201_CREATED)
+
+
+class UnlikePostView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        try:
+            like = Like.objects.get(post=post, user=request.user)
+            like.delete()
+            return Response({"detail": "Like removed."}, status=status.HTTP_200_OK)
+        except Like.DoesNotExist:
+            return Response({"detail": "You have not liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 # Register
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -36,7 +66,7 @@ class LoginView(APIView):
 class ProfileView(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
         return self.request.user
