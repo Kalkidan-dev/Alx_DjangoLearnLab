@@ -1,0 +1,44 @@
+# -------------------
+# Python
+# -------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# -------------------
+# Django
+# -------------------
+*.sqlite3
+*.log
+mediafiles/
+staticfiles/
+.env
+
+# -------------------
+# VS Code / IDE
+# -------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# -------------------
+# OS
+# -------------------
+.DS_Store
+Thumbs.db
+
+# -------------------
+# Ignore all other projects except social_media_api
+# -------------------
+advanced_features_and_security/
+advanced-api-project/
+alx_be_python/
+django_blog/
+django-models/
+django-modelss/
+GitHubCloneProject/
+Introduction_to_Django/
+python_introduction/
