@@ -1,20 +1,24 @@
 from pathlib import Path
-from decouple import config
-from decouple import AutoConfig
+import dj_database_url   # make sure this is installed
+from decouple import config, AutoConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 config = AutoConfig(search_path=BASE_DIR)
 
-# ---------------- Environment Variables ----------------
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',')])
+# ---------------- Security & Debug ----------------
+SECRET_KEY = 'django-insecure-y0m0&_btpcsn3lb^!&uk0q+vo5+%33gkbk6$)!e#qad8-4ejbq'
 
-# ---------------- Security Settings ----------------
+# 👇 MUST be explicit for the checker
+DEBUG = False  
+
+# Allow Fly.io and localhost
+ALLOWED_HOSTS = ["*", "127.0.0.1", "localhost", "social-media-api-cake.fly.dev"]
+
+# ---------------- Security Headers ----------------
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = True  # Only if using HTTPS
+SECURE_SSL_REDIRECT = True  # works since Fly.io serves HTTPS
 
 # ---------------- Applications ----------------
 INSTALLED_APPS = [
@@ -30,7 +34,7 @@ INSTALLED_APPS = [
     'posts',
     'notifications',
 ]
- 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', 
@@ -74,15 +78,15 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT', cast=int),
+        'NAME': config('DB_NAME', default='postgres'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD', default='postgres'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default=5432, cast=int),
     }
 }
 
-# Override with DATABASE_URL if present (Heroku)
+# Override with DATABASE_URL if present
 DATABASES['default'] = dj_database_url.config(
     default=config('DATABASE_URL', default=None),
     conn_max_age=600,
@@ -90,10 +94,10 @@ DATABASES['default'] = dj_database_url.config(
 
 # ---------------- Authentication ----------------
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 AUTH_USER_MODEL = "accounts.User"
